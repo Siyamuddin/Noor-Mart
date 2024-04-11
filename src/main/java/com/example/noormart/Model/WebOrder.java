@@ -17,9 +17,9 @@ public class WebOrder {
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id",nullable = false)
     private LocalUser user;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "address_id",nullable = false)
-    private Address address;
+//    @ManyToOne(optional = false)
+//    @JoinColumn(name = "address_id",nullable = false)
+//    private Address address;
     @OneToMany(mappedBy = "order",cascade = CascadeType.REMOVE,orphanRemoval = true)
     List<WebOrderQuantity> quantities=new ArrayList<>();
     @CreationTimestamp

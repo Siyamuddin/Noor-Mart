@@ -32,13 +32,14 @@ public class LocalUser implements UserDetails {
     private String firstName;
     @Column(nullable = false,unique = true)
     private String lastName;
-    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE,orphanRemoval = true)
-    List<Address> addresses=new ArrayList<>();
+//    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE,orphanRemoval = true)
+//    List<Address> addresses=new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinTable(name="user_role",
             joinColumns = @JoinColumn(name="user",referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name="role",referencedColumnName = "id"))
     private Set<Role> roles=new HashSet<>();
+
     @CreationTimestamp
     private Date UserCreated;
     @UpdateTimestamp

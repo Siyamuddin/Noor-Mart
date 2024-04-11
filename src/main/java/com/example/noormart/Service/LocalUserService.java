@@ -2,6 +2,7 @@ package com.example.noormart.Service;
 
 import com.example.noormart.Model.LocalUser;
 import com.example.noormart.Payloads.LocalUserDto;
+import com.example.noormart.Payloads.PageableResponse;
 import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.List;
@@ -11,6 +12,6 @@ public interface LocalUserService {
     LocalUserDto updateUser(Long id,LocalUserDto localUserDto);
     void deleteUser(Long id);
     LocalUserDto getUser(Long id);
-    LocalUserDto getAllUsers(Integer pageNumber,Integer pageSize,String sortBy,String sortDirect);
+    PageableResponse getAllUsers(Integer pageNumber, Integer pageSize, String sortBy, String sortDirect);
     List<LocalUserDto> searchUser(String firstName);
 }

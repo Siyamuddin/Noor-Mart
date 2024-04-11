@@ -30,11 +30,11 @@ public class NoorMartApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		try{
 			Role role=new Role();
-			role.setId(AppConstants.ADMIN_USER);
+			role.setId(Math.toIntExact(AppConstants.ADMIN_USER));
 			role.setName("ROLE_ADMIN");
 
 			Role role1=new Role();
-			role1.setId(AppConstants.NORMAL_USER);
+			role1.setId(Math.toIntExact(AppConstants.NORMAL_USER));
 			role1.setName("ROLE_NORMAL");
 
 			List<Role> roles=List.of(role,role1);

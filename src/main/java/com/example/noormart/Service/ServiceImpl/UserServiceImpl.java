@@ -6,16 +6,24 @@ import com.example.noormart.Exceptions.UserAlreadyExistException;
 import com.example.noormart.Model.LocalUser;
 import com.example.noormart.Model.Role;
 import com.example.noormart.Payloads.LocalUserDto;
+import com.example.noormart.Payloads.PageableResponse;
 import com.example.noormart.Repository.RoleRepo;
 import com.example.noormart.Repository.UserRepo;
 import com.example.noormart.Service.LocalUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.RoleList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class UserServiceImpl implements LocalUserService {
     @Autowired
@@ -34,7 +42,7 @@ public class UserServiceImpl implements LocalUserService {
         {
             LocalUser localUser1=modelMapper.map(localUserDto,LocalUser.class);
             localUser1.setPassword(passwordEncoder.encode(localUserDto.getPassword()));
-            Role role=roleRepo.findById(AppConstants.ADMIN_USER).orElseThrow(()-> new ResourceNotFoundException("Role","Role ID",AppConstants.ADMIN_USER));
+            Role role=roleRepo.findById(Math.toIntExact(AppConstants.ADMIN_USER)).orElseThrow(()-> new ResourceNotFoundException("Role","ROle ID",AppConstants.ADMIN_USER));
             localUser1.getRoles().add(role);
             LocalUser registerdUser=userRepo.save(localUser1);
             return modelMapper.map(registerdUser,LocalUserDto.class);
@@ -43,7 +51,7 @@ public class UserServiceImpl implements LocalUserService {
         {
             LocalUser localUser1=modelMapper.map(localUserDto,LocalUser.class);
             localUser1.setPassword(passwordEncoder.encode(localUserDto.getPassword()));
-            Role role=roleRepo.findById(AppConstants.ADMIN_USER).orElseThrow(()-> new ResourceNotFoundException("Role","Role ID",AppConstants.ADMIN_USER));
+            Role role=roleRepo.findById(Math.toIntExact(AppConstants.NORMAL_USER)).orElseThrow(()-> new ResourceNotFoundException("Role","ROle ID",AppConstants.NORMAL_USER));
             localUser1.getRoles().add(role);
             LocalUser registerdUser=userRepo.save(localUser1);
             return modelMapper.map(registerdUser,LocalUserDto.class);
@@ -54,26 +62,56 @@ public class UserServiceImpl implements LocalUserService {
 
     @Override
     public LocalUserDto updateUser(Long id, LocalUserDto localUserDto) {
-        return null;
+        LocalUser localUser=userRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("User","User Id",id));
+        localUser.setFirstName(localUserDto.getFirstName());
+        localUser.setLastName(localUserDto.getLastName());
+        localUser.setEmail(localUserDto.getEmail());
+        localUser.setPassword(passwordEncoder.encode(localUserDto.getPassword()));
+        LocalUser localUser1=userRepo.save(localUser);
+        return modelMapper.map(localUser1,LocalUserDto.class);
     }
 
     @Override
     public void deleteUser(Long id) {
-
+        LocalUser localUser=userRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("User","User Id",id));
+        localUser.getRoles().clear();
+        userRepo.deleteById(id);
     }
 
     @Override
     public LocalUserDto getUser(Long id) {
-        return null;
+        LocalUser localUser=userRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("User","User Id",id));
+
+        return modelMapper.map(localUser,LocalUserDto.class);
     }
 
     @Override
-    public LocalUserDto getAllUsers(Integer pageNumber, Integer pageSize, String sortBy, String sortDirect) {
-        return null;
+    public PageableResponse getAllUsers(Integer pageNumber, Integer pageSize, String sortBy, String sortDirect) {
+        Sort sort;
+        if(sortDirect.equalsIgnoreCase("asc"))
+        {
+            sort=Sort.by(sortBy).ascending();
+        }
+        else sort=Sort.by(sortBy).descending();
+
+        Pageable pageable= PageRequest.of(pageNumber,pageSize,sort);
+        Page<LocalUser> localUserPage=userRepo.findAll(pageable);
+        List<LocalUserDto> localUserDtoList=localUserPage.stream().map((user)->modelMapper.map(user,LocalUserDto.class)).collect(Collectors.toList());
+        PageableResponse pageableResponse=new PageableResponse();
+        pageableResponse.setLocalUserDtoList(localUserDtoList);
+        pageableResponse.setPageNumber(localUserPage.getNumber());
+        pageableResponse.setPageSize(localUserPage.getSize());
+        pageableResponse.setTotalPages(localUserPage.getTotalPages());
+        pageableResponse.setTotalElements((int) localUserPage.getTotalElements());
+       pageableResponse.setLast(localUserPage.isLast());
+        return pageableResponse;
     }
 
     @Override
     public List<LocalUserDto> searchUser(String firstName) {
-        return null;
+        List<LocalUser> localUsers=userRepo.findByFirstNameContaining(firstName);
+        List<LocalUserDto> localUserDtoList=localUsers.stream().map((user)-> modelMapper.map(user,LocalUserDto.class)).collect(Collectors.toList());
+
+        return localUserDtoList;
     }
 }

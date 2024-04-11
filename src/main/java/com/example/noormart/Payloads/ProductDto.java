@@ -14,17 +14,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ProductDto {
-    @NotEmpty
-    @Size(min = 2,message = "Product name must contain at least 2 characters")
+
     private String name;
     private String image;
-    @NotEmpty
-    @Size(max = 100,message = "Short description should be between 1 to 100 characters.")
     private String shortDescription;
-    @Size(max = 500,message = "Long description should be between 1 to 500 characters.")
     private String longDescription;
-    @NotEmpty(message = "Price can not be empty")
     private Double price;
-    @NotEmpty
-    private InventoryDto inventory;
+    private Integer quantity;
 }

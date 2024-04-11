@@ -1,6 +1,6 @@
 package com.example.noormart.Payloads;
 
-import com.example.noormart.Model.Address;
+//import com.example.noormart.Model.Address;
 import com.example.noormart.Model.LocalUser;
 import com.example.noormart.Model.WebOrderQuantity;
 import jakarta.persistence.CascadeType;
@@ -18,6 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 public class WebOrderDto {
     private LocalUserDto user;
-    private AddressDto address;
+//    private AddressDto address;
     List<WebOrderQuantityDto> quantities=new ArrayList<>();
 }
