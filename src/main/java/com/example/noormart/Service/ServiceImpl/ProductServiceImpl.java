@@ -1,11 +1,13 @@
 package com.example.noormart.Service.ServiceImpl;
 
 import com.example.noormart.Exceptions.ResourceNotFoundException;
+import com.example.noormart.Model.Category;
 import com.example.noormart.Model.Inventory;
 import com.example.noormart.Model.Product;
 import com.example.noormart.Payloads.ProductDto;
 import com.example.noormart.Payloads.ProductPageableResponse;
 import com.example.noormart.Payloads.SearchProductPageableResponse;
+import com.example.noormart.Repository.CategoryRepo;
 import com.example.noormart.Repository.InventoryRepo;
 import com.example.noormart.Repository.ProductRepo;
 import com.example.noormart.Service.ProductService;
@@ -32,12 +34,16 @@ public class ProductServiceImpl implements ProductService {
     private InventoryRepo inventoryRepo;
     @Autowired
     private ImageUploadService imageUploadService;
+    @Autowired
+    private CategoryRepo categoryRepo;
     @Override
-    public ProductDto createProduct(ProductDto productDto, String path, MultipartFile multipartFile) throws IOException {
+    public ProductDto createProduct(ProductDto productDto, String path, MultipartFile multipartFile,Long categoryId) throws IOException {
         Inventory inventory=new Inventory();
+        Category category=categoryRepo.findById(categoryId).orElseThrow(()-> new ResourceNotFoundException("Category","Category ID",categoryId));
         Product product=modelMapper.map(productDto,Product.class);
         String fileName=imageUploadService.uploadImage(path,multipartFile);
         product.setImage(fileName);
+        product.setCategory(category);
         Product savedProduct=productRepo.save(product);
 
 
@@ -108,6 +114,7 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDto> productDtoList=products.stream().map((product)-> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
 
         ProductPageableResponse ppr=new ProductPageableResponse();
+
         ppr.setProductDtoList(productDtoList);
         ppr.setTotalElements((int) products.getTotalElements());
         ppr.setPageSize(products.getSize());
@@ -126,16 +133,31 @@ public class ProductServiceImpl implements ProductService {
         }
         else sort=Sort.by(sortBy).descending();
         Pageable pageable=PageRequest.of(pageNumber,pageSize,sort);
+
         Page<Product> products=productRepo.findByName(keyword,pageable);
+
         List<ProductDto> productDtoList=products.stream().map((product)-> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
+
         SearchProductPageableResponse ppr=new SearchProductPageableResponse();
-        ppr.setProductDtoList(productDtoList);
+
+        ppr.setSearchproductDtoList(productDtoList);
+
         ppr.setTotalElements((int) products.getTotalElements());
         ppr.setPageSize(products.getSize());
         ppr.setPageNumber(products.getNumber());
         ppr.setTotalPages(products.getTotalPages());
         ppr.setLast(products.isLast());
+
         return ppr;
+    }
+
+    @Override
+    public List<ProductDto> getAllProductByCategory(Long categoryId) {
+        Category category=categoryRepo.findById(categoryId).orElseThrow(()-> new ResourceNotFoundException("Category","Category ID",categoryId));
+        List<Product> products=productRepo.findByCategory(category);
+        List<ProductDto> productDtoList=products.stream().map((product)-> modelMapper.map(product,ProductDto.class)).collect(Collectors.toList());
+
+        return productDtoList;
     }
 
 

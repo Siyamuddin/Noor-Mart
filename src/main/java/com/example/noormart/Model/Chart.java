@@ -1,6 +1,10 @@
 package com.example.noormart.Model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -9,19 +13,18 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "web_order")
-public class WebOrder {
+@Table(name = "Chart")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Chart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "user_id",nullable = false)
-    private LocalUser user;
-//    @ManyToOne(optional = false)
-//    @JoinColumn(name = "address_id",nullable = false)
-//    private Address address;
-    @OneToMany(mappedBy = "order",cascade = CascadeType.REMOVE,orphanRemoval = true)
-    List<WebOrderQuantity> quantities=new ArrayList<>();
+
+    @OneToMany(mappedBy = "chart",cascade = CascadeType.REMOVE,orphanRemoval = true)
+    List<Item> items=new ArrayList<>();
     @CreationTimestamp
     private Date Created;
     @UpdateTimestamp

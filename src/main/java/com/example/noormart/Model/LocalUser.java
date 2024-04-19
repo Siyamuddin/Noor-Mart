@@ -1,5 +1,6 @@
 package com.example.noormart.Model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class LocalUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,8 +34,12 @@ public class LocalUser implements UserDetails {
     private String firstName;
     @Column(nullable = false,unique = true)
     private String lastName;
-//    @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE,orphanRemoval = true)
-//    List<Address> addresses=new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private Chart chart;
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private List<Buy> buyList=new ArrayList<>();
+
 
     @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinTable(name="user_role",

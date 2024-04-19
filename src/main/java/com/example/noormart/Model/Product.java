@@ -1,5 +1,6 @@
 package com.example.noormart.Model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.Date;
 @Entity
 @Getter
 @Setter
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @NoArgsConstructor
 @Table(name = "product")
 public class Product {
@@ -26,6 +28,8 @@ public class Product {
     private Integer quantity;
     @OneToOne(mappedBy = "product",cascade = CascadeType.ALL,optional = false,orphanRemoval = true)
     private Inventory inventory;
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private Category category;
     @CreationTimestamp
     private Date Created;
     @UpdateTimestamp

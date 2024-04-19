@@ -3,13 +3,16 @@ package com.example.noormart.Service.ServiceImpl;
 import com.example.noormart.Configuration.AppConstants;
 import com.example.noormart.Exceptions.ResourceNotFoundException;
 import com.example.noormart.Exceptions.UserAlreadyExistException;
+import com.example.noormart.Model.Chart;
 import com.example.noormart.Model.LocalUser;
 import com.example.noormart.Model.Role;
 import com.example.noormart.Payloads.LocalUserDto;
 import com.example.noormart.Payloads.PageableResponse;
+import com.example.noormart.Repository.ChartRepo;
 import com.example.noormart.Repository.RoleRepo;
 import com.example.noormart.Repository.UserRepo;
 import com.example.noormart.Service.LocalUserService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,7 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.management.relation.RoleList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,7 +36,10 @@ public class UserServiceImpl implements LocalUserService {
     ModelMapper modelMapper;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    ChartRepo chartRepo;
     @Override
+    @Transactional
     public LocalUserDto registerUser(LocalUserDto localUserDto) {
         Optional<LocalUser> localUser=userRepo.findByEmail(localUserDto.getEmail());
         int count= (int) userRepo.count();
@@ -44,8 +49,11 @@ public class UserServiceImpl implements LocalUserService {
             localUser1.setPassword(passwordEncoder.encode(localUserDto.getPassword()));
             Role role=roleRepo.findById(Math.toIntExact(AppConstants.ADMIN_USER)).orElseThrow(()-> new ResourceNotFoundException("Role","ROle ID",AppConstants.ADMIN_USER));
             localUser1.getRoles().add(role);
+            Chart chart=new Chart();
+            chartRepo.save(chart);
+            localUser1.setChart(chart);
             LocalUser registerdUser=userRepo.save(localUser1);
-            return modelMapper.map(registerdUser,LocalUserDto.class);
+            return modelMapper.map(registerdUser, LocalUserDto.class);
         }
         else if(localUser.isEmpty())
         {
@@ -53,6 +61,9 @@ public class UserServiceImpl implements LocalUserService {
             localUser1.setPassword(passwordEncoder.encode(localUserDto.getPassword()));
             Role role=roleRepo.findById(Math.toIntExact(AppConstants.NORMAL_USER)).orElseThrow(()-> new ResourceNotFoundException("Role","ROle ID",AppConstants.NORMAL_USER));
             localUser1.getRoles().add(role);
+            Chart chart=new Chart();
+            chartRepo.save(chart);
+            localUser1.setChart(chart);
             LocalUser registerdUser=userRepo.save(localUser1);
             return modelMapper.map(registerdUser,LocalUserDto.class);
 
@@ -108,8 +119,8 @@ public class UserServiceImpl implements LocalUserService {
     }
 
     @Override
-    public List<LocalUserDto> searchUser(String firstName) {
-        List<LocalUser> localUsers=userRepo.findByFirstNameContaining(firstName);
+    public List<LocalUserDto> searchUser(String keyword) {
+        List<LocalUser> localUsers=userRepo.findByFirstNameContaining(keyword);
         List<LocalUserDto> localUserDtoList=localUsers.stream().map((user)-> modelMapper.map(user,LocalUserDto.class)).collect(Collectors.toList());
 
         return localUserDtoList;

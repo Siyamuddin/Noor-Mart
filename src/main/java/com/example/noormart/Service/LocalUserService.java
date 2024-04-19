@@ -1,9 +1,7 @@
 package com.example.noormart.Service;
 
-import com.example.noormart.Model.LocalUser;
 import com.example.noormart.Payloads.LocalUserDto;
 import com.example.noormart.Payloads.PageableResponse;
-import jakarta.persistence.criteria.CriteriaBuilder;
 
 import java.util.List;
 

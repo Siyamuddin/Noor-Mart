@@ -48,7 +48,7 @@ public class UserController {
         return new ResponseEntity<PageableResponse>(pageableResponse,HttpStatus.OK);
     }
     @GetMapping("/search/{keyword}")
-    public ResponseEntity<List<LocalUserDto>> searchUser(@PathVariable String keyword)
+    public ResponseEntity<List<LocalUserDto>> searchUser(@PathVariable("keyword") String keyword)
     {
         List<LocalUserDto> localUserDto=localUserService.searchUser(keyword);
         return new ResponseEntity<List<LocalUserDto>>(localUserDto,HttpStatus.OK);

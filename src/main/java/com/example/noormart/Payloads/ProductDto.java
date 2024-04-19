@@ -14,11 +14,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ProductDto {
-
+    private Long id;
     private String name;
     private String image;
     private String shortDescription;
     private String longDescription;
     private Double price;
     private Integer quantity;
+    private CategoryDto categoryDto;
 }

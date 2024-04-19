@@ -1,17 +1,22 @@
 package com.example.noormart.Configuration;
+
 import com.example.noormart.Security.JwtAuthenticationEntryPoint;
 import com.example.noormart.Security.JwtAuthenticationFilter;
 import com.example.noormart.Service.ServiceImpl.CustomUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -38,7 +43,9 @@ public class SecurityConfig {
             "/webjars/**",
             "/swagger-ui/index.html",
             "/swagger-ui.html",
-            "/api/user/delete/**"
+            "/api/user/delete/**",
+            "/api/category/get/all"
+
     };
     @Autowired
     private JwtAuthenticationEntryPoint point;
@@ -53,6 +60,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeRequests()
                 .requestMatchers(PUBLIC_URLS).permitAll()
+                .requestMatchers("api/product/get/all").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and().exceptionHandling(ex -> ex.authenticationEntryPoint(point))
