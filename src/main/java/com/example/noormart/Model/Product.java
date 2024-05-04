@@ -25,13 +25,15 @@ public class Product {
     private String shortDescription;
     private String longDescription;
     private Double price;
-    private Integer quantity;
-    @OneToOne(mappedBy = "product",cascade = CascadeType.ALL,optional = false,orphanRemoval = true)
-    private Inventory inventory;
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    private Integer available;
+    @ManyToOne
     private Category category;
     @CreationTimestamp
     private Date Created;
     @UpdateTimestamp
     private Date Updated;
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    private Inventory inventory;
+
 }

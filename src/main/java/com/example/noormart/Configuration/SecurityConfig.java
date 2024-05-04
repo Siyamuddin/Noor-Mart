@@ -44,7 +44,10 @@ public class SecurityConfig {
             "/swagger-ui/index.html",
             "/swagger-ui.html",
             "/api/user/delete/**",
-            "/api/category/get/all"
+            "/api/category/get/all",
+            "/api/product/get/**",
+            "api/product/search/**",
+            "api/category/get/**"
 
     };
     @Autowired

@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ItemDto {
+    private Long id;
     private ProductDto product;
     private Integer quantity;
-    private ChartDto chartDto;
+
 
 }

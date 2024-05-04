@@ -28,6 +28,8 @@ public class Item {
     @Column(nullable = false)
     private Integer quantity;
 
+    private Double totalAmount;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "chart_id",nullable = false)
    private Chart chart;

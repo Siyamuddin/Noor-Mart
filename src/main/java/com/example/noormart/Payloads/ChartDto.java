@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class ChartDto {
-    private boolean purchased;
+    private List<ItemDto> items=new ArrayList<>();
+    private Double totalAmount = 0.00;
 
-    List<ItemDto> items=new ArrayList<>();
 }

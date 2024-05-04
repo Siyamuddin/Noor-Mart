@@ -19,13 +19,14 @@ public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne(optional = false,orphanRemoval = true)
-    @JoinColumn(name = "product_id",nullable = false,unique = true)
-    private Product product;
-    @Column(nullable = false)
-    private Integer quantity;
+    private Integer quantity=0;
     @CreationTimestamp
     private Date Created;
     @UpdateTimestamp
     private Date Updated;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
 }

@@ -9,6 +9,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -20,6 +23,7 @@ public class ProductDto {
     private String shortDescription;
     private String longDescription;
     private Double price;
-    private Integer quantity;
-    private CategoryDto categoryDto;
+    private Integer available;
+    private Date Created;
+    private Date Updated;
 }

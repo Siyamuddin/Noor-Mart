@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class InventoryDto {
     @NotEmpty
-    private Product product;
+    private ProductDto product;
     @NotBlank
     private Integer quantity;
 }

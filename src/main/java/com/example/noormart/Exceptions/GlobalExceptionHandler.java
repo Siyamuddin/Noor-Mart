@@ -41,4 +41,16 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse=new ApiResponse(message,false);
         return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.ALREADY_REPORTED);
     }
+    @ExceptionHandler(ChartIsEmpty.class)
+    public ResponseEntity<ApiResponse> chartIsEmpty(ChartIsEmpty chartIsEmpty)
+    {
+        ApiResponse apiResponse=new ApiResponse(chartIsEmpty.getMessage(),false);
+        return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(ProductOutOfStockException.class)
+    public ResponseEntity<ApiResponse> productOutOfStock(ProductOutOfStockException ex)
+    {
+        ApiResponse apiResponse=new ApiResponse(ex.getMessage(),false);
+        return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.NOT_FOUND);
+    }
 }

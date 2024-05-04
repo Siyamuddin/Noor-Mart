@@ -1,10 +1,7 @@
 package com.example.noormart.Controller;
 
 import com.example.noormart.Configuration.AppConstants;
-import com.example.noormart.Payloads.ApiResponse;
-import com.example.noormart.Payloads.ProductDto;
-import com.example.noormart.Payloads.ProductPageableResponse;
-import com.example.noormart.Payloads.SearchProductPageableResponse;
+import com.example.noormart.Payloads.*;
 import com.example.noormart.Service.ProductService;
 import com.example.noormart.Service.ServiceImpl.ImageUploadService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,23 +37,25 @@ public class ProductController {
     @Autowired
     private ImageUploadService imageUploadService;
 
-    @PostMapping("/add/category/{categoryId}")
+    @PostMapping("/add/category/{categoryId}/{quantity}")
     public ResponseEntity<ProductDto> createProduct(@RequestParam("file")MultipartFile file,
                                                     @RequestParam("productInfo")String productInfo,
-                                                    @PathVariable Long categoryId
+                                                    @PathVariable Long categoryId,
+                                                    @PathVariable Integer quantity
                                                     ) throws IOException {
         ProductDto productDto=objectMapper.readValue(productInfo,ProductDto.class);
-        ProductDto newProductDto=productService.createProduct(productDto,path,file,categoryId);
+        ProductDto newProductDto=productService.createNewProduct(productDto,path,file,categoryId,quantity);
         return new ResponseEntity<ProductDto>(newProductDto, HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update/{id}/{quantity}")
     public ResponseEntity<ProductDto> updateProduct(@RequestParam("file")MultipartFile file,
                                                     @RequestParam("productInfo")String productInfo,
-                                                    @PathVariable Long id
+                                                    @PathVariable Long id,
+                                                    @PathVariable Integer quantity
     ) throws IOException {
         ProductDto productDto=objectMapper.readValue(productInfo,ProductDto.class);
-        ProductDto newProductDto=productService.updateProduct(id,productDto,path,file);
+        ProductDto newProductDto=productService.updateProduct(id,productDto,path,file,quantity);
         return new ResponseEntity<ProductDto>(newProductDto, HttpStatus.OK);
     }
 
@@ -67,9 +66,8 @@ public class ProductController {
         return new ResponseEntity<ApiResponse>(apiResponse, HttpStatusCode.valueOf(200));
     }
 
-    @GetMapping(value = "/get/{id}",produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<ProductDto> getProduct(@PathVariable Long id,
-                              HttpServletResponse response) throws IOException {
+    @GetMapping(value = "/get/{id}")
+    public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) throws IOException {
         ProductDto productDto=productService.getProduct(id);
 //        InputStream resource= imageUploadService.getSource(path,productDto.getImage());
 //        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
@@ -119,5 +117,17 @@ public class ProductController {
     {
         List<ProductDto> productDtoList=productService.getAllProductByCategory(categoryId);
         return new ResponseEntity<List<ProductDto>>(productDtoList,HttpStatus.OK);
+    }
+    @GetMapping("/get/stock/productId/{id}")
+    public ResponseEntity<InventoryDto> getProductStock(@PathVariable Long id)
+    {
+        InventoryDto inventoryDto=productService.getProductStock(id);
+        return new ResponseEntity<>(inventoryDto,HttpStatus.OK);
+    }
+    @PutMapping("/refill/productId/{id}/quantity/{quantity}")
+    public ResponseEntity<ProductDto> refillProduct(@PathVariable Long id,@PathVariable Integer quantity)
+    {
+        ProductDto productDto=productService.refillProduct(id,quantity);
+        return new ResponseEntity<ProductDto>(productDto,HttpStatus.OK);
     }
 }

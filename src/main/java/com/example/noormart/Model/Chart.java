@@ -23,8 +23,9 @@ public class Chart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "chart",cascade = CascadeType.REMOVE,orphanRemoval = true)
+    @OneToMany(mappedBy = "chart",cascade = CascadeType.ALL,orphanRemoval = true,fetch = FetchType.EAGER)
     List<Item> items=new ArrayList<>();
+    private Double totalAmount=0.00;
     @CreationTimestamp
     private Date Created;
     @UpdateTimestamp

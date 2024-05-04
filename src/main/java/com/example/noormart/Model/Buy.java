@@ -1,5 +1,6 @@
 package com.example.noormart.Model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,5 +22,11 @@ public class Buy {
     private LocalUser localUser;
     private Double totalAmount;
     @CreationTimestamp
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date buyingTime;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @JoinColumn(name = "payment_id", nullable = false)
+    private Payment payment;
+
 }
