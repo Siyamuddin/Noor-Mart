@@ -38,6 +38,8 @@ public class UserServiceImpl implements LocalUserService {
     PasswordEncoder passwordEncoder;
     @Autowired
     ChartRepo chartRepo;
+    @Autowired
+    private MailSendingService mailSendingService;
     @Override
     @Transactional
     public LocalUserDto registerUser(LocalUserDto localUserDto) {
@@ -65,6 +67,8 @@ public class UserServiceImpl implements LocalUserService {
             chartRepo.save(chart);
             localUser1.setChart(chart);
             LocalUser registerdUser=userRepo.save(localUser1);
+            mailSendingService.sendEmail(registerdUser.getEmail(), "NoorMart",String.format("Name: %s %s\nEmail: %s\nRole: %s\nThank you" +
+                                                " for creating a new account in NoorMart.\nEnjoy your shopping.",registerdUser.getFirstName(),registerdUser.getLastName(),registerdUser.getEmail(),registerdUser.getRoles()));
             return modelMapper.map(registerdUser,LocalUserDto.class);
 
         }

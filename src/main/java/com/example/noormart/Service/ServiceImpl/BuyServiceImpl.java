@@ -4,9 +4,9 @@ import com.example.noormart.Exceptions.ChartIsEmpty;
 import com.example.noormart.Exceptions.ResourceNotFoundException;
 import com.example.noormart.Model.*;
 import com.example.noormart.Payloads.BuyDto;
+import com.example.noormart.Payloads.SellResponse;
 import com.example.noormart.Repository.*;
 import com.example.noormart.Service.BuyService;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,9 +36,10 @@ public class BuyServiceImpl implements BuyService {
     private BuyRepo buyRepo;
     @Autowired
     private  PaymentRepo paymentRepo;
+    @Autowired
+    private MailSendingService mailSendingService;
     @Override
-    @Transactional
-    public BuyDto buyProducts(Long userId,boolean paid,String payMethod) {
+    public BuyDto buyProducts(Long userId,boolean paid,String payMethod) throws InterruptedException {
         LocalUser localUser=userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User","user ID",userId));
         if (localUser.getChart().getItems().isEmpty()) {
             throw new ChartIsEmpty(userId);
@@ -74,6 +75,10 @@ public class BuyServiceImpl implements BuyService {
         chartRepo.save(chart);
         userRepo.save(localUser);
 
+        mailSendingService.sendEmail(savedBuy.getLocalUser().getEmail(),"NoorMart Shopping",String.format(
+                "Products: %s\nTotal:%f\nPaymentMethod:%s\nPayment Status:%s",chart.getItems(),savedBuy.getTotalAmount(),savedBuy.getPayment().getPaymentMethod(),savedBuy.getPayment().isPaid()
+        ));
+
         return  modelMapper.map(savedBuy,BuyDto.class);}}
 
     @Override
@@ -106,4 +111,25 @@ public class BuyServiceImpl implements BuyService {
         return buyDtoList;
     }
 
+    @Override
+    public SellResponse getSellData(Date date) {
+        List<Payment> paymentList=paymentRepo.findAllByPaymentTimeAfterAndPaidFalse(date);
+        List<Payment> paymentList1=paymentRepo.findAllByPaymentTimeAfterAndPaidTrue(date);
+        SellResponse sellResponse=new SellResponse();
+        for(int i=0;i<paymentList.size();i++)
+        {
+            double up= (sellResponse.getUnPaid())+(paymentList.get(i).getBuy().getTotalAmount());
+            sellResponse.setUnPaid(up);
+        }
+        for(int i=0;i<paymentList1.size();i++)
+        {
+            double pd= (sellResponse.getPaid())+(paymentList1.get(i).getBuy().getTotalAmount());
+            sellResponse.setPaid(pd);
+        }
+        sellResponse.setTotalSell((sellResponse.getPaid()+ sellResponse.getUnPaid()));
+        return sellResponse;
+    }
+
 }
+
+
