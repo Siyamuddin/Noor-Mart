@@ -6,6 +6,8 @@ import com.example.noormart.Service.ProductService;
 import com.example.noormart.Service.ServiceImpl.ImageUploadService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +30,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/product")
+@Tag(name = "Product")
+@SecurityRequirement(name = "JWT-Auth")
 public class ProductController {
     @Value("${project.image}")
     String path;
@@ -36,7 +41,7 @@ public class ProductController {
     private ObjectMapper objectMapper;
     @Autowired
     private ImageUploadService imageUploadService;
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add/category/{categoryId}/{quantity}")
     public ResponseEntity<ProductDto> createProduct(@RequestParam("file")MultipartFile file,
                                                     @RequestParam("productInfo")String productInfo,
@@ -47,7 +52,7 @@ public class ProductController {
         ProductDto newProductDto=productService.createNewProduct(productDto,path,file,categoryId,quantity);
         return new ResponseEntity<ProductDto>(newProductDto, HttpStatus.CREATED);
     }
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/update/{id}/{quantity}")
     public ResponseEntity<ProductDto> updateProduct(@RequestParam("file")MultipartFile file,
                                                     @RequestParam("productInfo")String productInfo,
@@ -58,7 +63,7 @@ public class ProductController {
         ProductDto newProductDto=productService.updateProduct(id,productDto,path,file,quantity);
         return new ResponseEntity<ProductDto>(newProductDto, HttpStatus.OK);
     }
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long id) throws IOException {
         productService.deleteProduct(path,id);
@@ -124,6 +129,7 @@ public class ProductController {
         InventoryDto inventoryDto=productService.getProductStock(id);
         return new ResponseEntity<>(inventoryDto,HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/refill/productId/{id}/quantity/{quantity}")
     public ResponseEntity<ProductDto> refillProduct(@PathVariable Long id,@PathVariable Integer quantity)
     {

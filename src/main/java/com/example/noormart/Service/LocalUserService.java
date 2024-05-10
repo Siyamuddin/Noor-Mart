@@ -12,4 +12,5 @@ public interface LocalUserService {
     LocalUserDto getUser(Long id);
     PageableResponse getAllUsers(Integer pageNumber, Integer pageSize, String sortBy, String sortDirect);
     List<LocalUserDto> searchUser(String firstName);
+    String authorizeUser(Long userId,int roleId);
 }

@@ -197,6 +197,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public InventoryDto getProductStock(Long productId) {
+        Product product=productRepo.findById(productId).orElseThrow(()->new ResourceNotFoundException("Produc","product ID",productId));
         Inventory inventory=inventoryRepo.findByProductId(productId);
         return modelMapper.map(inventory,InventoryDto.class);
     }

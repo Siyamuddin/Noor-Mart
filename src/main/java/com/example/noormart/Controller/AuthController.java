@@ -5,6 +5,8 @@ import com.example.noormart.Payloads.JWTResponse;
 import com.example.noormart.Payloads.LocalUserDto;
 import com.example.noormart.Security.JwtHelper;
 import com.example.noormart.Service.LocalUserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Authentication")
 public class AuthController {
     @Autowired
     private UserDetailsService userDetailsService;

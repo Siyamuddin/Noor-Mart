@@ -3,10 +3,13 @@ package com.example.noormart.Controller;
 import com.example.noormart.Payloads.BuyDto;
 import com.example.noormart.Payloads.SellResponse;
 import com.example.noormart.Service.BuyService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,6 +21,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/buy")
+@SecurityRequirement(name = "JWT-Auth")
+@Tag(name = "Purchese")
 public class BuyController {
     @Autowired
     private BuyService buyService;
@@ -34,12 +39,14 @@ public class BuyController {
         List<BuyDto> buyDtoList=buyService.getBuyByUser(id);
         return new ResponseEntity<List<BuyDto>>(buyDtoList,HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all/unpaid")
     public ResponseEntity<List<BuyDto>> getAllUnpaidBuy()
     {
         List<BuyDto> buyDtoList=buyService.getUnpaidBuys();
         return new ResponseEntity<List<BuyDto>>(buyDtoList,HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all/byDate")
     public ResponseEntity<List<BuyDto>> getAllBuyByDate(@RequestParam(value = "time", required = false) String time) {
         // Handle cases where time parameter is missing or empty
@@ -61,6 +68,7 @@ public class BuyController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/sellData")
     public ResponseEntity<SellResponse> getAllSellData(@RequestParam(value = "time", required = false) String time) {
         // Handle cases where time parameter is missing or empty

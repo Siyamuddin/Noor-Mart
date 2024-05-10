@@ -5,23 +5,29 @@ import com.example.noormart.Payloads.ApiResponse;
 import com.example.noormart.Payloads.CategoryDto;
 import com.example.noormart.Payloads.PageableCategoryResponse;
 import com.example.noormart.Service.CategoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/category")
+@Tag(name = "Category")
+@SecurityRequirement(name = "JWT-Auth")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/add")
     public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto)
     {
         CategoryDto categoryDto1=categoryService.createCategory(categoryDto);
         return new ResponseEntity<CategoryDto>(categoryDto1, HttpStatus.CREATED);
     }
-
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/update/{categoryId}")
     public ResponseEntity<CategoryDto> updateDto(@RequestBody CategoryDto categoryDto,@PathVariable Long categoryId){
         CategoryDto categoryDto1=categoryService.updateCategory(categoryId,categoryDto);
@@ -33,6 +39,7 @@ public class CategoryController {
         CategoryDto categoryDto=categoryService.getCategory(categoryId);
         return new ResponseEntity<CategoryDto>(categoryDto,HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/delete/{categoryId}")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long categoryId)
     {

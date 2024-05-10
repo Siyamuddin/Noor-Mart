@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Service
 public class UserServiceImpl implements LocalUserService {
     @Autowired
@@ -128,5 +130,15 @@ public class UserServiceImpl implements LocalUserService {
         List<LocalUserDto> localUserDtoList=localUsers.stream().map((user)-> modelMapper.map(user,LocalUserDto.class)).collect(Collectors.toList());
 
         return localUserDtoList;
+    }
+
+    @Override
+    public String authorizeUser(Long userId,int roleId) {
+        LocalUser localUser=userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User","User Id",userId));
+        Optional<Role> role= Optional.ofNullable(roleRepo.findById(roleId).orElseThrow(() -> new ResourceNotFoundException("Role","Role ID",(long)roleId)));
+        localUser.getRoles().clear();
+        localUser.getRoles().add(role.get());
+        LocalUser saved=userRepo.save(localUser);
+        return String.format("%s has a new role as %s",localUser.getFirstName(),role.get().getName());
     }
 }
