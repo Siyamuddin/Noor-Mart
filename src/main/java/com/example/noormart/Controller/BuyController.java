@@ -26,14 +26,14 @@ import java.util.List;
 public class BuyController {
     @Autowired
     private BuyService buyService;
-    @PostMapping("/userChart/{userId}")
+    @PostMapping("/{userId}")
     public ResponseEntity<BuyDto> buyProduct(@PathVariable Long userId,
                                              @RequestParam(value = "paid",defaultValue = "false",required = true)boolean paid,
                                              @RequestParam(value = "method",defaultValue = "bank",required = false)String method) throws InterruptedException {
         BuyDto buyDto=buyService.buyProducts(userId,paid,method);
         return new ResponseEntity<BuyDto>(buyDto, HttpStatus.OK);
     }
-    @GetMapping("/user/{id}")
+    @GetMapping("/userBuy/{userId}")
     public ResponseEntity<List<BuyDto>> getBuyByUser(@PathVariable Long id)
     {
         List<BuyDto> buyDtoList=buyService.getBuyByUser(id);

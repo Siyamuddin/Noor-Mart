@@ -4,6 +4,7 @@ import com.example.noormart.Exceptions.ChartIsEmpty;
 import com.example.noormart.Exceptions.ResourceNotFoundException;
 import com.example.noormart.Model.*;
 import com.example.noormart.Payloads.BuyDto;
+import com.example.noormart.Payloads.BuyEmailResponse;
 import com.example.noormart.Payloads.SellResponse;
 import com.example.noormart.Repository.*;
 import com.example.noormart.Service.BuyService;
@@ -74,11 +75,8 @@ public class BuyServiceImpl implements BuyService {
         chart.setTotalAmount(0.00);
         chartRepo.save(chart);
         userRepo.save(localUser);
-
-        mailSendingService.sendEmail(savedBuy.getLocalUser().getEmail(),"NoorMart Shopping",String.format(
-                "Products: %s\nTotal:%f\nPaymentMethod:%s\nPayment Status:%s",chart.getItems(),savedBuy.getTotalAmount(),savedBuy.getPayment().getPaymentMethod(),savedBuy.getPayment().isPaid()
-        ));
-
+            BuyEmailResponse buyEmailResponse=new BuyEmailResponse();
+        mailSendingService.sendEmail(savedBuy.getLocalUser().getEmail(),"NoorMart Shopping",buyEmailResponse.response(savedBuy,chart));
         return  modelMapper.map(savedBuy,BuyDto.class);}}
 
     @Override

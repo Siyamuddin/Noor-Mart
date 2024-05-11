@@ -6,6 +6,7 @@ import com.example.noormart.Payloads.LocalUserDto;
 import com.example.noormart.Security.JwtHelper;
 import com.example.noormart.Service.LocalUserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.tags.Tags;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@Tag(name = "Authentication")
+@Tag(name = "Authentication",description = "Can be used to rigister and login ther user.")
 public class AuthController {
     @Autowired
     private UserDetailsService userDetailsService;
@@ -36,7 +37,6 @@ public class AuthController {
     private JwtHelper helper;
 
     private Logger logger = LoggerFactory.getLogger(AuthController.class);
-
 
     @PostMapping("/login")
     public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest request) {
