@@ -75,8 +75,8 @@ public class BuyServiceImpl implements BuyService {
         chart.setTotalAmount(0.00);
         chartRepo.save(chart);
         userRepo.save(localUser);
-            BuyEmailResponse buyEmailResponse=new BuyEmailResponse();
-        mailSendingService.sendEmail(savedBuy.getLocalUser().getEmail(),"NoorMart Shopping",buyEmailResponse.response(savedBuy,chart));
+        BuyEmailResponse buyEmailResponse=new BuyEmailResponse();
+        mailSendingService.sendEmail(savedBuy.getLocalUser().getEmail(),"NoorMart Shopping ("+new Date().toString()+")",buyEmailResponse.response(savedBuy));
         return  modelMapper.map(savedBuy,BuyDto.class);}}
 
     @Override

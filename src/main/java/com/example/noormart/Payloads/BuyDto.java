@@ -15,6 +15,5 @@ public class BuyDto {
         private Long buyId;
         private LocalUserDto localUser;
         private Double totalAmount;
-        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
         private Date buyingTime;
 }

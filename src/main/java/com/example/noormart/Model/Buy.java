@@ -22,7 +22,6 @@ public class Buy {
     private LocalUser localUser;
     private Double totalAmount;
     @CreationTimestamp
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date buyingTime;
 
     @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
