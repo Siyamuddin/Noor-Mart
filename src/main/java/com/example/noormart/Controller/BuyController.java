@@ -34,9 +34,9 @@ public class BuyController {
         return new ResponseEntity<BuyDto>(buyDto, HttpStatus.OK);
     }
     @GetMapping("/userBuy/{userId}")
-    public ResponseEntity<List<BuyDto>> getBuyByUser(@PathVariable Long id)
+    public ResponseEntity<List<BuyDto>> getBuyByUser(@PathVariable Long userId)
     {
-        List<BuyDto> buyDtoList=buyService.getBuyByUser(id);
+        List<BuyDto> buyDtoList=buyService.getBuyByUser(userId);
         return new ResponseEntity<List<BuyDto>>(buyDtoList,HttpStatus.OK);
     }
     @PreAuthorize("hasRole('ROLE_ADMIN')")
