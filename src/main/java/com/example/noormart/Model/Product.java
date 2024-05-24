@@ -2,6 +2,7 @@ package com.example.noormart.Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,9 +21,12 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false,unique = true)
     private String name;
     private String image;
+    @Size(max = 50)
     private String shortDescription;
+    @Size(max=500)
     private String longDescription;
     private Double price;
     private Integer available;
