@@ -1,16 +1,15 @@
 package com.example.noormart.Controller;
 
 import com.example.noormart.Configuration.AppConstants;
-import com.example.noormart.Payloads.ApiResponse;
 import com.example.noormart.Payloads.CategoryDto;
 import com.example.noormart.Payloads.PageableCategoryResponse;
 import com.example.noormart.Service.CategoryService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,33 +19,21 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/add")
-    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto)
-    {
-        CategoryDto categoryDto1=categoryService.createCategory(categoryDto);
-        return new ResponseEntity<CategoryDto>(categoryDto1, HttpStatus.CREATED);
-    }
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/update/{categoryId}")
-    public ResponseEntity<CategoryDto> updateDto(@RequestBody CategoryDto categoryDto,@PathVariable Long categoryId){
-        CategoryDto categoryDto1=categoryService.updateCategory(categoryId,categoryDto);
-        return new ResponseEntity<>(categoryDto1,HttpStatus.OK);
-    }
+
+
+    @Operation(
+            summary = "Get a single category",
+            description = "Get a single category by providing category ID.")
     @GetMapping("/get/{categoryId}")
     public ResponseEntity<CategoryDto> getCategory(@PathVariable Long categoryId)
     {
         CategoryDto categoryDto=categoryService.getCategory(categoryId);
         return new ResponseEntity<CategoryDto>(categoryDto,HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/delete/{categoryId}")
-    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long categoryId)
-    {
-        categoryService.deleteCategory(categoryId);
-        ApiResponse apiResponse=new ApiResponse("The category has beed deleted successfully",true);
-        return new ResponseEntity<>(apiResponse,HttpStatus.OK);
-    }
+
+    @Operation(
+            summary = "Get all categories",
+            description = "Get all categories")
     @GetMapping("/get/all")
     public ResponseEntity<PageableCategoryResponse> getAllCategory(@RequestParam(value = "pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false)int pageNumber,
                                                    @RequestParam(value = "pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false) int pageSize,

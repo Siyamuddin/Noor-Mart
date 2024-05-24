@@ -22,8 +22,12 @@ import io.swagger.v3.oas.annotations.servers.Server;
         ),
         servers ={
                 @Server(
+                        description = "Production",
+                        url = "https://noor-mart-production.up.railway.app/"
+                ),
+                @Server(
                         description = "Local Dev",
-                        url = "noor-mart-production.up.railway.app/"
+                        url = "http://localhost:9090/"
                 )
         }
 )

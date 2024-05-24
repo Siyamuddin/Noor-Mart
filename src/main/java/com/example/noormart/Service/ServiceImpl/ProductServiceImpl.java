@@ -25,7 +25,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,7 +46,7 @@ public class ProductServiceImpl implements ProductService {
     private CategoryRepo categoryRepo;
     @Override
     @Transactional
-    public ProductDto createNewProduct(ProductDto productDto, String path, MultipartFile multipartFile,Long categoryId,Integer quantity) throws IOException {
+    public ProductDto createNewProduct(ProductDto productDto,Long categoryId,Integer quantity) throws IOException {
         Product product=modelMapper.map(productDto,Product.class);
         //creating new inventory for new product.
         Inventory inventory=new Inventory();
@@ -57,9 +59,9 @@ public class ProductServiceImpl implements ProductService {
         //fetching category to add product by category.
         Category category=categoryRepo.findById(categoryId).orElseThrow(()-> new ResourceNotFoundException("Category","Category ID",categoryId));
         //uploading product image by call image upload method.
-        String fileName=imageUploadService.uploadImage(path,multipartFile);
+//        String fileName=imageUploadService.uploadImage(path,multipartFile);
         //setting product information.
-        product.setImage(fileName);
+        product.setImage("Default.jpg");//setting new image name.
         product.setCategory(category);//setting product category
         product.setAvailable(inventory1.getQuantity());//setting available product.
         Product savedProduct=productRepo.save(product);//saving the product.
@@ -82,20 +84,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductDto updateProduct(Long id, ProductDto productDto, String path, MultipartFile multipartFile,Integer quantity) throws IOException {
+    public ProductDto updateProduct(Long id, ProductDto productDto) throws IOException {
         Product product=productRepo.findById(id).orElseThrow(()->new ResourceNotFoundException("Produc","product ID",id));
-        //fetching inventory by product.
-        Inventory inventory=inventoryRepo.findByProductId(id);
-        inventory.setQuantity(quantity);
-        Inventory inventory1=inventoryRepo.save(inventory);
 
         //updating the image data.
         product.setName(productDto.getName());
         //setImage
-        imageUploadService.deleteImage(path,product.getImage());//deleting the existing image from the directory
-        String fileName= imageUploadService.uploadImage(path,multipartFile);//uploading new image.
-        product.setImage(fileName);//setting new image name.
-        product.setAvailable(inventory1.getQuantity());//replacing quantity.
+        product.setImage("Default.jpg");//setting new image name.
         product.setShortDescription(productDto.getShortDescription());
         product.setLongDescription(productDto.getLongDescription());
         product.setPrice(productDto.getPrice());
@@ -200,6 +195,23 @@ public class ProductServiceImpl implements ProductService {
         Product product=productRepo.findById(productId).orElseThrow(()->new ResourceNotFoundException("Produc","product ID",productId));
         Inventory inventory=inventoryRepo.findByProductId(productId);
         return modelMapper.map(inventory,InventoryDto.class);
+    }
+
+    @Override
+    public ProductDto uploadProductImage(Long productId,String path, MultipartFile file) throws IOException {
+        Product product=productRepo.findById(productId).orElseThrow(()->new ResourceNotFoundException("Product","product ID",productId));
+        String fileName=imageUploadService.uploadImage(path,file);
+        product.setImage(fileName);
+        Product savedProduct=productRepo.save(product);
+        return modelMapper.map(savedProduct,ProductDto.class);
+    }
+
+    @Override
+    public InputStream getImage(Long productId, String path) throws FileNotFoundException {
+        Product product=productRepo.findById(productId).orElseThrow(()->new ResourceNotFoundException("Product","product ID",productId));
+        InputStream inputStream= imageUploadService.getSource(path,product.getImage());
+
+        return inputStream;
     }
 
 

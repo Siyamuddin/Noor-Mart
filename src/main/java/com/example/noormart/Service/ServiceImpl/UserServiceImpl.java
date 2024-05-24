@@ -92,6 +92,7 @@ public class UserServiceImpl implements LocalUserService {
     public void deleteUser(Long id) {
         LocalUser localUser=userRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("User","User Id",id));
         localUser.getRoles().clear();
+        userRepo.save(localUser);
         userRepo.deleteById(id);
     }
 

@@ -5,9 +5,8 @@ import com.example.noormart.Payloads.JWTResponse;
 import com.example.noormart.Payloads.LocalUserDto;
 import com.example.noormart.Security.JwtHelper;
 import com.example.noormart.Service.LocalUserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +36,9 @@ public class AuthController {
     private JwtHelper helper;
 
     private Logger logger = LoggerFactory.getLogger(AuthController.class);
-
+    @Operation(
+            summary = "Long in User",
+            description = "Provide credentials that you gave while registering.")
     @PostMapping("/login")
     public ResponseEntity<JWTResponse> login(@RequestBody JWTRequest request) {
 
@@ -72,6 +73,9 @@ public class AuthController {
     }
 
     //register new user api
+    @Operation(
+            summary = "Register User",
+            description = "For this time please provide only user's firstName, LastName, email and password nothing else. If you register successfully you'll a conformation email.")
     @PostMapping("/register")
     public ResponseEntity<LocalUserDto> registerUser(@Valid @RequestBody LocalUserDto localUserDto)
     {

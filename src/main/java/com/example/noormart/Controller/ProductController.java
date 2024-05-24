@@ -1,32 +1,28 @@
 package com.example.noormart.Controller;
 
 import com.example.noormart.Configuration.AppConstants;
-import com.example.noormart.Payloads.*;
+import com.example.noormart.Payloads.InventoryDto;
+import com.example.noormart.Payloads.ProductDto;
+import com.example.noormart.Payloads.ProductPageableResponse;
+import com.example.noormart.Payloads.SearchProductPageableResponse;
 import com.example.noormart.Service.ProductService;
 import com.example.noormart.Service.ServiceImpl.ImageUploadService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/product")
@@ -41,36 +37,10 @@ public class ProductController {
     private ObjectMapper objectMapper;
     @Autowired
     private ImageUploadService imageUploadService;
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/add/category/{categoryId}/{quantity}")
-    public ResponseEntity<ProductDto> createProduct(@RequestParam("file")MultipartFile file,
-                                                    @RequestParam("productInfo")String productInfo,
-                                                    @PathVariable Long categoryId,
-                                                    @PathVariable Integer quantity
-                                                    ) throws IOException {
-        ProductDto productDto=objectMapper.readValue(productInfo,ProductDto.class);
-        ProductDto newProductDto=productService.createNewProduct(productDto,path,file,categoryId,quantity);
-        return new ResponseEntity<ProductDto>(newProductDto, HttpStatus.CREATED);
-    }
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/update/{id}/{quantity}")
-    public ResponseEntity<ProductDto> updateProduct(@RequestParam("file")MultipartFile file,
-                                                    @RequestParam("productInfo")String productInfo,
-                                                    @PathVariable Long id,
-                                                    @PathVariable Integer quantity
-    ) throws IOException {
-        ProductDto productDto=objectMapper.readValue(productInfo,ProductDto.class);
-        ProductDto newProductDto=productService.updateProduct(id,productDto,path,file,quantity);
-        return new ResponseEntity<ProductDto>(newProductDto, HttpStatus.OK);
-    }
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long id) throws IOException {
-        productService.deleteProduct(path,id);
-        ApiResponse apiResponse=new ApiResponse("Product deleted successfully",true);
-        return new ResponseEntity<ApiResponse>(apiResponse, HttpStatusCode.valueOf(200));
-    }
 
+    @Operation(
+            summary = "Get a single product.",
+            description = "Get a single product by providing ID.")
     @GetMapping(value = "/get/{id}")
     public ResponseEntity<ProductDto> getProduct(@PathVariable Long id) throws IOException {
         ProductDto productDto=productService.getProduct(id);
@@ -80,6 +50,9 @@ public class ProductController {
         return new ResponseEntity<ProductDto>(productDto,HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Get all products",
+            description = "Get all product in Page.")
     @GetMapping("/get/all")
     public ResponseEntity<ProductPageableResponse> allProducts(@RequestParam(value ="pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
                                                @RequestParam(value ="pageSize",defaultValue = AppConstants.PAGE_SIZE,required = false) Integer pageSize,
@@ -106,6 +79,9 @@ public class ProductController {
         //returning pageable all product response.
     return new ResponseEntity<ProductPageableResponse>(productPageableResponse,HttpStatus.OK);
     }
+    @Operation(
+            summary = "Search product By name",
+            description = "Search product By name.")
     @GetMapping("/search/{keyword}")
     public ResponseEntity<SearchProductPageableResponse> searchProduct(@PathVariable("keyword") String keyword,
                                                                        @RequestParam(value ="pageNumber",defaultValue = AppConstants.PAGE_NUMBER,required = false) Integer pageNumber,
@@ -117,23 +93,36 @@ public class ProductController {
         return new ResponseEntity<SearchProductPageableResponse>(searchProductPageableResponse,HttpStatus.OK);
     }
 
+    @Operation(
+            summary = "Get All products By category",
+            description = "Provide a category ID to get all product in this category.")
     @GetMapping("/get/all/{categoryId}")
     public ResponseEntity<List<ProductDto>> getAllProductByCategory(@PathVariable Long categoryId)
     {
         List<ProductDto> productDtoList=productService.getAllProductByCategory(categoryId);
         return new ResponseEntity<List<ProductDto>>(productDtoList,HttpStatus.OK);
     }
+
+    //Todo add all product stock featuchers
+    @Operation(
+            summary = "Get product's Stock",
+            description = "Check products inventory.")
     @GetMapping("/get/stock/productId/{id}")
     public ResponseEntity<InventoryDto> getProductStock(@PathVariable Long id)
     {
         InventoryDto inventoryDto=productService.getProductStock(id);
         return new ResponseEntity<>(inventoryDto,HttpStatus.OK);
     }
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/refill/productId/{id}/quantity/{quantity}")
-    public ResponseEntity<ProductDto> refillProduct(@PathVariable Long id,@PathVariable Integer quantity)
-    {
-        ProductDto productDto=productService.refillProduct(id,quantity);
-        return new ResponseEntity<ProductDto>(productDto,HttpStatus.OK);
+
+
+    @Operation(
+            summary = "Get product Image",
+            description = "Get product image by providing product category.")
+    @GetMapping(value = "/image/view/{productId}",produces = MediaType.IMAGE_JPEG_VALUE)
+    public void getImage(@PathVariable Long productId,
+                         HttpServletResponse response) throws IOException {
+        InputStream inputStream=productService.getImage(productId,path);
+        response.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        StreamUtils.copy(inputStream,response.getOutputStream());
     }
 }
