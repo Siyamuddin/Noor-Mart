@@ -4,8 +4,9 @@ import com.example.noormart.Exceptions.ChartIsEmpty;
 import com.example.noormart.Exceptions.ResourceNotFoundException;
 import com.example.noormart.Model.*;
 import com.example.noormart.Payloads.BuyDto;
-import com.example.noormart.Payloads.BuyEmailResponse;
-import com.example.noormart.Payloads.SellResponse;
+import com.example.noormart.Payloads.Responses.BuyEmailResponse;
+import com.example.noormart.Payloads.Responses.GetAllUnpaidBuyResponse;
+import com.example.noormart.Payloads.Responses.SellResponse;
 import com.example.noormart.Repository.*;
 import com.example.noormart.Service.BuyService;
 import lombok.extern.slf4j.Slf4j;
@@ -80,37 +81,68 @@ public class BuyServiceImpl implements BuyService {
         return  modelMapper.map(savedBuy,BuyDto.class);}}
 
     @Override
-    public List<BuyDto> getBuyByUser(Long userId) {
+    public List<GetAllUnpaidBuyResponse> getBuyByUser(Long userId) {
         LocalUser localUser=userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User","User ID",userId));
         List<Buy> buyList=buyRepo.findAllByLocalUser(localUser);
-        List<BuyDto> buyDtoList=buyList.stream().map((buy)-> modelMapper.map(buy,BuyDto.class)).collect(Collectors.toList());
-        return buyDtoList;
+        List<GetAllUnpaidBuyResponse> guabr=new ArrayList<>();
+        for(int i=0;i<buyList.size();i++)
+        {
+
+            GetAllUnpaidBuyResponse guabr1=new GetAllUnpaidBuyResponse();
+            guabr1.setPurchaseId(buyList.get(i).getBuyId());
+            guabr1.setTotalAmount(buyList.get(i).getTotalAmount());
+            guabr1.setUserName(buyList.get(i).getLocalUser().getFirstName()+" "+buyList.get(i).getLocalUser().getLastName());
+            guabr1.setUserEmail(buyList.get(i).getLocalUser().getEmail());
+            guabr1.setPurchaseTime(buyList.get(i).getBuyingTime());
+            guabr1.setPaid(buyList.get(i).getPayment().isPaid());
+            guabr.add(guabr1);
+        }
+        return guabr;
     }
 
     @Override
-    public List<BuyDto> getUnpaidBuys() {
+    public List<GetAllUnpaidBuyResponse> getTotalUnpaidBuys() {
         List<Payment> paymentList=paymentRepo.findByPaidFalse();
-        List<Buy> buyList=new ArrayList<>();
+        List<GetAllUnpaidBuyResponse> guabr=new ArrayList<>();
         for(int i=0;i<paymentList.size();i++)
         {
            Buy buy=buyRepo.findByPayment(paymentList.get(i));
-           buyList.add(buy);
-        }
-        List<BuyDto> buyDtoList=buyList.stream().map((buy)-> modelMapper.map(buy,BuyDto.class)).collect(Collectors.toList());
 
-        return buyDtoList;
+            GetAllUnpaidBuyResponse guabr1=new GetAllUnpaidBuyResponse();
+            guabr1.setPurchaseId(buy.getBuyId());
+            guabr1.setTotalAmount(buy.getTotalAmount());
+            guabr1.setUserName(buy.getLocalUser().getFirstName()+" "+buy.getLocalUser().getLastName());
+            guabr1.setUserEmail(buy.getLocalUser().getEmail());
+            guabr1.setPurchaseTime(buy.getBuyingTime());
+            guabr1.setPaid(buy.getPayment().isPaid());
+            guabr.add(guabr1);
+        }
+
+        return guabr;
     }
 
     @Override
-    public List<BuyDto> getBuyByDate(Date date) {
+    public List<GetAllUnpaidBuyResponse> getAllBuyByDate(Date date) {
         List<Buy> buyList=buyRepo.findByBuyingTimeAfter(date);
         List<BuyDto> buyDtoList=buyList.stream().map((buy)-> modelMapper.map(buy,BuyDto.class)).collect(Collectors.toList());
+        List<GetAllUnpaidBuyResponse> guabr=new ArrayList<>();
+        for(int i=0;i<buyList.size();i++)
+        {
 
-        return buyDtoList;
+            GetAllUnpaidBuyResponse guabr1=new GetAllUnpaidBuyResponse();
+            guabr1.setPurchaseId(buyList.get(i).getBuyId());
+            guabr1.setTotalAmount(buyList.get(i).getTotalAmount());
+            guabr1.setUserName(buyList.get(i).getLocalUser().getFirstName()+" "+buyList.get(i).getLocalUser().getLastName());
+            guabr1.setUserEmail(buyList.get(i).getLocalUser().getEmail());
+            guabr1.setPurchaseTime(buyList.get(i).getBuyingTime());
+            guabr1.setPaid(buyList.get(i).getPayment().isPaid());
+            guabr.add(guabr1);
+        }
+        return guabr;
     }
 
     @Override
-    public SellResponse getSellData(Date date) {
+    public SellResponse getTotalSellDataByDate(Date date) {
         List<Payment> paymentList=paymentRepo.findAllByPaymentTimeAfterAndPaidFalse(date);
         List<Payment> paymentList1=paymentRepo.findAllByPaymentTimeAfterAndPaidTrue(date);
         SellResponse sellResponse=new SellResponse();

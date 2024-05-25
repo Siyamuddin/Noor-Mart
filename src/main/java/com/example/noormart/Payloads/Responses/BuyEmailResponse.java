@@ -1,4 +1,4 @@
-package com.example.noormart.Payloads;
+package com.example.noormart.Payloads.Responses;
 
 import com.example.noormart.Model.Buy;
 import com.example.noormart.Model.Chart;

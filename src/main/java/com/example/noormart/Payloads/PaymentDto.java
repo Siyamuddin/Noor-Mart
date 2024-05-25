@@ -17,5 +17,4 @@ public class PaymentDto {
     private boolean paid;
     private String paymentMethod;
     private Date paymentTime;
-    private Buy buy;
 }

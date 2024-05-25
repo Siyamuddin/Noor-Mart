@@ -1,9 +1,7 @@
 package com.example.noormart.Service;
 
 import com.example.noormart.Payloads.CategoryDto;
-import com.example.noormart.Payloads.PageableCategoryResponse;
-
-import java.util.List;
+import com.example.noormart.Payloads.Responses.PageableCategoryResponse;
 
 public interface CategoryService {
     CategoryDto createCategory(CategoryDto categoryDto);

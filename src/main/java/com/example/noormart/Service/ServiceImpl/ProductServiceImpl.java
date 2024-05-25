@@ -6,22 +6,19 @@ import com.example.noormart.Model.Inventory;
 import com.example.noormart.Model.Product;
 import com.example.noormart.Payloads.InventoryDto;
 import com.example.noormart.Payloads.ProductDto;
-import com.example.noormart.Payloads.ProductPageableResponse;
-import com.example.noormart.Payloads.SearchProductPageableResponse;
+import com.example.noormart.Payloads.Responses.ProductPageableResponse;
+import com.example.noormart.Payloads.Responses.SearchProductPageableResponse;
 import com.example.noormart.Repository.CategoryRepo;
 import com.example.noormart.Repository.InventoryRepo;
 import com.example.noormart.Repository.ProductRepo;
 import com.example.noormart.Service.ProductService;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

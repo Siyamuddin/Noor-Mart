@@ -1,6 +1,7 @@
 package com.example.noormart.Controller;
 
 import com.example.noormart.Payloads.BuyDto;
+import com.example.noormart.Payloads.Responses.GetAllUnpaidBuyResponse;
 import com.example.noormart.Service.BuyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -33,10 +34,10 @@ public class BuyController {
             summary = "Get Purchase History",
             description = "A regular user can check his/her purchase history.")
     @GetMapping("/userBuy/{userId}")
-    public ResponseEntity<List<BuyDto>> getBuyByUser(@PathVariable Long userId)
+    public ResponseEntity<List<GetAllUnpaidBuyResponse>> getBuyByUser(@PathVariable Long userId)
     {
-        List<BuyDto> buyDtoList=buyService.getBuyByUser(userId);
-        return new ResponseEntity<List<BuyDto>>(buyDtoList,HttpStatus.OK);
+        List<GetAllUnpaidBuyResponse> guabr=buyService.getBuyByUser(userId);
+        return new ResponseEntity<List<GetAllUnpaidBuyResponse>>(guabr,HttpStatus.OK);
     }
 
 }

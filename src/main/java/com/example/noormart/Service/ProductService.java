@@ -1,8 +1,8 @@
 package com.example.noormart.Service;
 
-import com.example.noormart.Model.Product;
 import com.example.noormart.Payloads.*;
-import org.springframework.data.domain.Page;
+import com.example.noormart.Payloads.Responses.ProductPageableResponse;
+import com.example.noormart.Payloads.Responses.SearchProductPageableResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;

@@ -15,4 +15,5 @@ public interface BuyRepo extends JpaRepository<Buy,Long> {
     List<Buy> findAllByLocalUser(LocalUser localUser);
     Buy findByPayment(Payment payment);
     List<Buy> findByBuyingTimeAfter(Date date);
+    void deleteAllByLocalUserId(Long id);
 }

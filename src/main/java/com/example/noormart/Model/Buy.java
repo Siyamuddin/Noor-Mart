@@ -24,7 +24,7 @@ public class Buy {
     @CreationTimestamp
     private Date buyingTime;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true,fetch = FetchType.EAGER)
     @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment;
 

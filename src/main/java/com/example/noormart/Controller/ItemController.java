@@ -1,6 +1,6 @@
 package com.example.noormart.Controller;
 
-import com.example.noormart.Payloads.ApiResponse;
+import com.example.noormart.Payloads.Responses.ApiResponse;
 import com.example.noormart.Payloads.ItemDto;
 import com.example.noormart.Service.ItemService;
 import io.swagger.v3.oas.annotations.Operation;

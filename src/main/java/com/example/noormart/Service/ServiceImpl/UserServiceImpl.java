@@ -2,12 +2,18 @@ package com.example.noormart.Service.ServiceImpl;
 
 import com.example.noormart.Configuration.AppConstants;
 import com.example.noormart.Exceptions.ResourceNotFoundException;
+import com.example.noormart.Exceptions.UnpaidBillException;
 import com.example.noormart.Exceptions.UserAlreadyExistException;
+import com.example.noormart.Model.Buy;
 import com.example.noormart.Model.Chart;
 import com.example.noormart.Model.LocalUser;
 import com.example.noormart.Model.Role;
 import com.example.noormart.Payloads.LocalUserDto;
-import com.example.noormart.Payloads.PageableResponse;
+import com.example.noormart.Payloads.NewUserRegistrationRequest;
+import com.example.noormart.Payloads.PaymentDto;
+import com.example.noormart.Payloads.Responses.ApiResponse;
+import com.example.noormart.Payloads.Responses.PageableResponse;
+import com.example.noormart.Repository.BuyRepo;
 import com.example.noormart.Repository.ChartRepo;
 import com.example.noormart.Repository.RoleRepo;
 import com.example.noormart.Repository.UserRepo;
@@ -26,8 +32,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 @Service
 public class UserServiceImpl implements LocalUserService {
     @Autowired
@@ -42,9 +46,12 @@ public class UserServiceImpl implements LocalUserService {
     ChartRepo chartRepo;
     @Autowired
     private MailSendingService mailSendingService;
+    @Autowired
+    private BuyRepo buyRepo;
+
     @Override
     @Transactional
-    public LocalUserDto registerUser(LocalUserDto localUserDto) {
+    public LocalUserDto registerUser(NewUserRegistrationRequest localUserDto) {
         Optional<LocalUser> localUser=userRepo.findByEmail(localUserDto.getEmail());
         int count= (int) userRepo.count();
         if(localUser.isEmpty() && count==0)
@@ -78,7 +85,7 @@ public class UserServiceImpl implements LocalUserService {
     }
 
     @Override
-    public LocalUserDto updateUser(Long id, LocalUserDto localUserDto) {
+    public LocalUserDto updateUser(Long id, NewUserRegistrationRequest localUserDto) {
         LocalUser localUser=userRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("User","User Id",id));
         localUser.setFirstName(localUserDto.getFirstName());
         localUser.setLastName(localUserDto.getLastName());
@@ -89,11 +96,30 @@ public class UserServiceImpl implements LocalUserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(Long id) {
         LocalUser localUser=userRepo.findById(id).orElseThrow(()-> new ResourceNotFoundException("User","User Id",id));
-        localUser.getRoles().clear();
-        userRepo.save(localUser);
-        userRepo.deleteById(id);
+        List<Buy> userBuy=buyRepo.findAllByLocalUser(localUser);
+        int count=0;
+        for(int i=0;i<userBuy.size();i++)
+        {
+            if(userBuy.get(i).getPayment().isPaid()==false)
+            {
+                count++;
+            }
+        }
+        if(count==0)
+        {
+            localUser.getRoles().clear();
+            userRepo.save(localUser);
+            buyRepo.deleteAllByLocalUserId(id);
+            userRepo.deleteById(id);
+
+        }
+        else
+        {
+            throw new UnpaidBillException(count);
+        }
     }
 
     @Override
@@ -141,5 +167,14 @@ public class UserServiceImpl implements LocalUserService {
         localUser.getRoles().add(role.get());
         LocalUser saved=userRepo.save(localUser);
         return String.format("%s has a new role as %s",localUser.getFirstName(),role.get().getName());
+    }
+
+    @Override
+    public PaymentDto updatePayment(Long buyId, boolean paid, String method) {
+        Buy buy=buyRepo.findById(buyId).orElseThrow(()-> new ResourceNotFoundException("Buy","buy ID",buyId));
+        buy.getPayment().setPaymentMethod(method);
+        buy.getPayment().setPaid(paid);
+        Buy savedBuy=buyRepo.save(buy);
+        return modelMapper.map(savedBuy.getPayment(),PaymentDto.class);
     }
 }

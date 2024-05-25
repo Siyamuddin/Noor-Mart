@@ -1,4 +1,4 @@
-package com.example.noormart.Payloads;
+package com.example.noormart.Payloads.Responses;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,11 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleResponse {
-    private Integer userId;
-    private String userName;
-    private String userRole;
-
-
-
+public class ApiResponse {
+    private String message;
+    private boolean success;
 }

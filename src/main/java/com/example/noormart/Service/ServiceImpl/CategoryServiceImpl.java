@@ -3,7 +3,7 @@ package com.example.noormart.Service.ServiceImpl;
 import com.example.noormart.Exceptions.ResourceNotFoundException;
 import com.example.noormart.Model.Category;
 import com.example.noormart.Payloads.CategoryDto;
-import com.example.noormart.Payloads.PageableCategoryResponse;
+import com.example.noormart.Payloads.Responses.PageableCategoryResponse;
 import com.example.noormart.Repository.CategoryRepo;
 import com.example.noormart.Service.CategoryService;
 import org.modelmapper.ModelMapper;

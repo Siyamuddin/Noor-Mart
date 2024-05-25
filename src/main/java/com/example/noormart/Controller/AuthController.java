@@ -3,6 +3,7 @@ package com.example.noormart.Controller;
 import com.example.noormart.Payloads.JWTRequest;
 import com.example.noormart.Payloads.JWTResponse;
 import com.example.noormart.Payloads.LocalUserDto;
+import com.example.noormart.Payloads.NewUserRegistrationRequest;
 import com.example.noormart.Security.JwtHelper;
 import com.example.noormart.Service.LocalUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,9 +78,9 @@ public class AuthController {
             summary = "Register User",
             description = "For this time please provide only user's firstName, LastName, email and password nothing else. If you register successfully you'll a conformation email.")
     @PostMapping("/register")
-    public ResponseEntity<LocalUserDto> registerUser(@Valid @RequestBody LocalUserDto localUserDto)
+    public ResponseEntity<LocalUserDto> registerUser(@Valid @RequestBody NewUserRegistrationRequest newUserRegistrationRequest)
     {
-        LocalUserDto registeredUser=this.localUserServices.registerUser(localUserDto);
+        LocalUserDto registeredUser=this.localUserServices.registerUser(newUserRegistrationRequest);
         return new ResponseEntity<LocalUserDto>(registeredUser,HttpStatus.CREATED);
     }
 }

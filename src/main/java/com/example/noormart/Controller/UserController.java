@@ -1,6 +1,8 @@
 package com.example.noormart.Controller;
 
-import com.example.noormart.Payloads.ApiResponse;
+import com.example.noormart.Payloads.NewUserRegistrationRequest;
+import com.example.noormart.Payloads.PaymentDto;
+import com.example.noormart.Payloads.Responses.ApiResponse;
 import com.example.noormart.Payloads.LocalUserDto;
 import com.example.noormart.Service.LocalUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +24,7 @@ public class UserController {
             summary = "Update user",
             description = "Update user information.")
     @PutMapping("/update/{id}")
-    public ResponseEntity<LocalUserDto> updateUser(@RequestBody LocalUserDto localUserDto, @PathVariable Long id)
+    public ResponseEntity<LocalUserDto> updateUser(@RequestBody NewUserRegistrationRequest localUserDto, @PathVariable Long id)
     {
         LocalUserDto updatedUser=localUserService.updateUser(id,localUserDto);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
@@ -47,6 +49,15 @@ public class UserController {
     {
         LocalUserDto localUserDto=localUserService.getUser(id);
         return new ResponseEntity<LocalUserDto>(localUserDto,HttpStatus.OK);
+    }
+
+    @PostMapping("/pay/{purchaseId}")
+    public ResponseEntity<PaymentDto> pay(@RequestParam(value = "paid",defaultValue = "unpaid",required = true) boolean paid,
+                                          @RequestParam(value = "method",defaultValue = "bank",required = true) String paymethod,
+                                          @PathVariable Long purchaseId)
+    {
+        PaymentDto paymentDto=localUserService.updatePayment(purchaseId,paid,paymethod);
+        return new ResponseEntity<>(paymentDto,HttpStatus.OK);
     }
 
 }

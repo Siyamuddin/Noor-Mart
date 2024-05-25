@@ -2,7 +2,7 @@ package com.example.noormart.Controller;
 
 import com.example.noormart.Configuration.AppConstants;
 import com.example.noormart.Payloads.CategoryDto;
-import com.example.noormart.Payloads.PageableCategoryResponse;
+import com.example.noormart.Payloads.Responses.PageableCategoryResponse;
 import com.example.noormart.Service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

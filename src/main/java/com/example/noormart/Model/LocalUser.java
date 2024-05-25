@@ -39,7 +39,7 @@ public class LocalUser implements UserDetails {
 
     @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     private Chart chart;
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Buy> buyList=new ArrayList<>();
 
 

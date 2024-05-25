@@ -2,6 +2,10 @@ package com.example.noormart.Controller;
 
 import com.example.noormart.Configuration.AppConstants;
 import com.example.noormart.Payloads.*;
+import com.example.noormart.Payloads.Responses.ApiResponse;
+import com.example.noormart.Payloads.Responses.GetAllUnpaidBuyResponse;
+import com.example.noormart.Payloads.Responses.PageableResponse;
+import com.example.noormart.Payloads.Responses.SellResponse;
 import com.example.noormart.Service.BuyService;
 import com.example.noormart.Service.CategoryService;
 import com.example.noormart.Service.LocalUserService;
@@ -51,10 +55,10 @@ public class AdminController {
             description = "It will fetch all the unpaid purchase details details including user and purchase time.")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all/unpaid")
-    public ResponseEntity<List<BuyDto>> getAllUnpaidBuy()
+    public ResponseEntity<List<GetAllUnpaidBuyResponse>> getAllUnpaidBuy()
     {
-        List<BuyDto> buyDtoList=buyService.getUnpaidBuys();
-        return new ResponseEntity<List<BuyDto>>(buyDtoList, HttpStatus.OK);
+        List<GetAllUnpaidBuyResponse> guabrList=buyService.getTotalUnpaidBuys();
+        return new ResponseEntity<List<GetAllUnpaidBuyResponse>>(guabrList, HttpStatus.OK);
     }
 
     @Operation(
@@ -62,7 +66,7 @@ public class AdminController {
             description = "It will fetch all the purchase history after given date.")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/all/byDate")
-    public ResponseEntity<List<BuyDto>> getAllBuyByDate(@RequestParam(value = "time", required = false) String time)
+    public ResponseEntity<List<GetAllUnpaidBuyResponse>> getAllBuyByDate(@RequestParam(value = "time", required = false) String time)
     {
         // Handle cases where time parameter is missing or empty
         if (time == null || time.isEmpty()) {
@@ -76,8 +80,8 @@ public class AdminController {
             LocalDate localDate = LocalDate.parse(time, formatter);
             Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-            List<BuyDto> buyDtoList = buyService.getBuyByDate(date);
-            return new ResponseEntity<>(buyDtoList, HttpStatus.OK);
+            List<GetAllUnpaidBuyResponse> guabr = buyService.getAllBuyByDate(date);
+            return new ResponseEntity<>(guabr, HttpStatus.OK);
         } catch (ParseException e) {
             // Handle parsing exception (log the error or return a bad request response)
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -102,7 +106,7 @@ public class AdminController {
             LocalDate localDate = LocalDate.parse(time, formatter);
             Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-            SellResponse sellResponse=buyService.getSellData(date);
+            SellResponse sellResponse=buyService.getTotalSellDataByDate(date);
             return new ResponseEntity<>(sellResponse, HttpStatus.OK);
         } catch (ParseException e) {
             // Handle parsing exception (log the error or return a bad request response)
